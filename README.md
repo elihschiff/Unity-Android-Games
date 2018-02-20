@@ -6,7 +6,7 @@
 
 #### Connect 4 
 
-[Download](https://play.google.com/store/apps/details?id=com.BitSchiff.Connect4) and [Video Demo](https://youtu.be/AcIB68Bth88)
+   [Download](https://play.google.com/store/apps/details?id=com.BitSchiff.Connect4) and [Video Demo](https://youtu.be/AcIB68Bth88)
 
 ## Planned games: 
 
