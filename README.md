@@ -4,11 +4,7 @@
 
 ## List of game: 
 
-#### Connect 4:
-
-    Download: https://play.google.com/store/apps/details?id=com.BitSchiff.Connect4
-    
-    Demo Video: 
+#### Connect 4 [Download](https://play.google.com/store/apps/details?id=com.BitSchiff.Connect4) [Video Demo](https://youtu.be/AcIB68Bth88)
 
 ## Planned games: 
 
