@@ -1,6 +1,7 @@
 # Unity-Mini-Android-Games
 
-## A bunch of Android mini games I made all in unity (currently I have just made 1 game)
+## A bunch of Android mini games I made all in unity 
+####(currently I have just made 1 game)
 
 ## List of game: 
 
