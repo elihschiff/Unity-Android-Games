@@ -11,6 +11,9 @@ public class mainControler : MonoBehaviour {
 	private int[,] smallBoards = new int[9, 9];//first number is the board second is spot in board
 	private GameObject[,] smallBoardsObjects = new GameObject[9, 9];
 
+	private GameObject[,] placerObjectsBoard = new GameObject[3, 3];
+	private Vector3[,] placerBoardLocation = new Vector3[3, 3];
+
 	private int[,] pieceLocationsX = new int[9, 9];//first number is the board second is spot in board
 	private int[,] pieceLocationsY = new int[9, 9];//first number is the board second is spot in board
 
@@ -21,7 +24,7 @@ public class mainControler : MonoBehaviour {
 
 	private int turnColor = 1;
 
-	int currentActiveBoard = 0;
+	int currentActiveBoard = -1;
 	int lastActiveBoard = 0;
 
 	public Camera c;
@@ -70,7 +73,17 @@ public class mainControler : MonoBehaviour {
 				spotY += 9;
 			}
 		}
-		//Debug.Log("Setup Complete");
+
+		float X = 1.5f;
+		float Y = -24f;
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				placerBoardLocation[j, i] = new Vector3(X, Y, 0);
+				X += 6f;
+			}
+			X = 1.5f;
+			Y -= 6f;
+		}
 	}
 
 	// Update is called once per frame
@@ -80,6 +93,11 @@ public class mainControler : MonoBehaviour {
 
 		if (gameOver == false) {
 			if (Input.GetMouseButtonUp(0)) {
+				currentActiveBoard = changeActiveBoard(mouseSpot, currentActiveBoard);
+				if (currentActiveBoard >= 0) {
+					Tilemap myTMcab = GameObject.Find("Mini Board (" + (currentActiveBoard + 1) + ")").GetComponent<Tilemap>();
+					myTMcab.color = activeBoardColor;
+				}
 				getPlaceSpot(mouseSpot);
 				if (attemptToPlace(mouseSpot, currentActiveBoard, turnColor) == true) {
 					results = checkForMiniWin(lastActiveBoard, turnColor);
@@ -111,6 +129,11 @@ public class mainControler : MonoBehaviour {
 		if (spot == -999) {
 			return false;
 		}
+
+		if (cab == -1) {
+			return false;
+		}
+
 		if (smallBoards[cab, spot] == 0) {
 			GameObject clone;
 			clone = Instantiate(peice, new Vector3(pieceLocationsX[cab, spot], pieceLocationsY[cab, spot], 0), Quaternion.identity);
@@ -130,18 +153,56 @@ public class mainControler : MonoBehaviour {
 			}
 			smallBoards[cab, spot] = tc;
 
-			lastActiveBoard = currentActiveBoard;
-			currentActiveBoard = spot;
+			changeActiveBoard(spot);
 
 			Tilemap myTMlab = GameObject.Find("Mini Board (" + (lastActiveBoard + 1) + ")").GetComponent<Tilemap>();
 			myTMlab.color = inactiveBoardColor;
-			Tilemap myTMcab = GameObject.Find("Mini Board (" + (currentActiveBoard + 1) + ")").GetComponent<Tilemap>();
-			myTMcab.color = activeBoardColor;
+			if (currentActiveBoard >= 0) {
+				Tilemap myTMcab = GameObject.Find("Mini Board (" + (currentActiveBoard + 1) + ")").GetComponent<Tilemap>();
+				myTMcab.color = activeBoardColor;
+			}
 
 
 			return true;
 		}
 		return false;
+	}
+
+	private void changeActiveBoard(int newBoard) {
+		lastActiveBoard = currentActiveBoard;
+
+		if (bigBoard[newBoard] != 0) {
+			inactivateBoard();
+			return;
+		}
+		else {
+			currentActiveBoard = newBoard;
+		}
+
+		GameObject clone;
+		for(int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				Destroy(placerObjectsBoard[j,i]);
+
+				if (smallBoards[currentActiveBoard, i * 3 + j] == 1) {
+					clone = Instantiate(turnIndicator, placerBoardLocation[j, i], Quaternion.identity);
+					SpriteRenderer mySpriteRenderer = clone.GetComponent<SpriteRenderer>();
+					placerObjectsBoard[j, i] = clone;
+					mySpriteRenderer.color = tile1Color;
+				}
+				else if(smallBoards[currentActiveBoard, i * 3 + j] == -1) {
+					clone = Instantiate(turnIndicator, placerBoardLocation[j, i], Quaternion.identity);
+					SpriteRenderer mySpriteRenderer = clone.GetComponent<SpriteRenderer>();
+					placerObjectsBoard[j, i] = clone;
+					mySpriteRenderer.color = tile2Color;
+				}
+				else {
+					placerObjectsBoard[j, i] = null;
+				}
+			}
+		}
+
+
 	}
 
 	int getPlaceSpot(Vector3 mcl) {
@@ -160,15 +221,50 @@ public class mainControler : MonoBehaviour {
 		return -999;
 	}
 
+	int changeActiveBoard(Vector3 mcl, int cab) {
+		if(currentActiveBoard == -1) {
+			for (int i = 0; i < 3; i++) {
+				for (int j = 0; j < 3; j++) {
+					if (mcl.x >= pieceLocationsX[i*3+j,4] - 4 && mcl.x <= pieceLocationsX[i * 3 + j, 4] + 4) {
+						if (mcl.y >= pieceLocationsY[i * 3 + j, 4] - 4 && mcl.y <= pieceLocationsY[i * 3 + j, 4] + 4) {
+							if (bigBoard[i * 3 + j] == 0) {
+								Debug.Log(i * 3 + j);
+								return (i * 3 + j);
+							}
+						}
+					}
+					//Debug.Log((pieceLocationsY[i * 3 + j, 4] - 4) + " " + (pieceLocationsY[i * 3 + j, 4] + 4));
+				}
+			}
+		}
+		//Debug.Log("That is not a valid spot to place a piece");
+		return cab;
+	}
+
+	private void inactivateBoard() {
+		currentActiveBoard = -1;
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				Destroy(placerObjectsBoard[j, i]);
+			}
+		}
+	}
+
 	private int[] checkForMiniWin(int lab, int tc) {//0,0,0 equals loss //1=vertical 2=horozontal 3=diagnagal b-t 4=diagnol t-b// then start spot x then y
 		for (int i = 0; i < 3; i++) {
 			if (smallBoards[lab, i * 3] == tc && smallBoards[lab, i * 3 + 1] == tc && smallBoards[lab, i * 3 + 2] == tc) {
 				int[] winningLocation = { 1, i * 3 };
+				if(currentActiveBoard == lab) {
+					inactivateBoard();
+				}
 				return winningLocation;
 			}
 
 			if (smallBoards[lab, i] == tc && smallBoards[lab, i+3] == tc && smallBoards[lab, i+6] == tc) {
 				int[] winningLocation = { 2, i };
+				if (currentActiveBoard == lab) {
+					inactivateBoard();
+				}
 				return winningLocation;
 			}
 
@@ -176,11 +272,17 @@ public class mainControler : MonoBehaviour {
 
 		if (smallBoards[lab, 0] == tc && smallBoards[lab, 4] == tc && smallBoards[lab, 8] == tc) {
 			int[] winningLocation = { 3, 0};
+			if (currentActiveBoard == lab) {
+				inactivateBoard();
+			}
 			return winningLocation;
 		}
 
 		if (smallBoards[lab, 6] == tc && smallBoards[lab, 4] == tc && smallBoards[lab, 2] == tc) {
 			int[] winningLocation = { 4, 6};
+			if (currentActiveBoard == lab) {
+				inactivateBoard();
+			}
 			return winningLocation;
 		}
 
@@ -194,6 +296,9 @@ public class mainControler : MonoBehaviour {
 		}
 		if (countDraw >= 7 * 6) {
 			int[] winningLocation = { 5, 0};
+			if (currentActiveBoard == lab) {
+				inactivateBoard();
+			}
 			return winningLocation;
 		}
 
@@ -237,7 +342,7 @@ public class mainControler : MonoBehaviour {
 			int[] winningLocation = { 5, 0 };
 			return winningLocation;
 		}
-
+		
 		int[] wl = { 0, 0 };
 		return wl;
 	}

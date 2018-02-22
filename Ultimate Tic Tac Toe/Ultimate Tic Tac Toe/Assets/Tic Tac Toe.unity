@@ -1836,7 +1836,7 @@ BoxCollider2D:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 305891082}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
@@ -8386,7 +8386,7 @@ Tilemap:
   - m_RefCount: 0
     m_Data: {r: 0, g: 0, b: 21.71306, a: 1e-45}
   m_AnimationFrameRate: 1
-  m_Color: {r: 0.4896555, g: 0, b: 1, a: 1}
+  m_Color: {r: 0, g: 0.7103448, b: 1, a: 1}
   m_Origin: {x: -15, y: -15, z: 0}
   m_Size: {x: 34, y: 35, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
