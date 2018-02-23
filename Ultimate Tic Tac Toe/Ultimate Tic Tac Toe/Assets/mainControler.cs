@@ -94,6 +94,7 @@ public class mainControler : MonoBehaviour {
 		if (gameOver == false) {
 			if (Input.GetMouseButtonUp(0)) {
 				currentActiveBoard = changeActiveBoard(mouseSpot, currentActiveBoard);
+				displayActiveBoard(currentActiveBoard);
 				if (currentActiveBoard >= 0) {
 					Tilemap myTMcab = GameObject.Find("Mini Board (" + (currentActiveBoard + 1) + ")").GetComponent<Tilemap>();
 					myTMcab.color = activeBoardColor;
@@ -154,7 +155,7 @@ public class mainControler : MonoBehaviour {
 			}
 			smallBoards[cab, spot] = tc;
 
-			changeActiveBoard(spot);
+			displayActiveBoard(spot);
 
 			Tilemap myTMlab = GameObject.Find("Mini Board (" + (lastActiveBoard + 1) + ")").GetComponent<Tilemap>();
 			myTMlab.color = inactiveBoardColor;
@@ -169,7 +170,7 @@ public class mainControler : MonoBehaviour {
 		return false;
 	}
 
-	private void changeActiveBoard(int newBoard) {
+	private void displayActiveBoard(int newBoard) {
 		lastActiveBoard = currentActiveBoard;
 
 		if (bigBoard[newBoard] != 0) {
