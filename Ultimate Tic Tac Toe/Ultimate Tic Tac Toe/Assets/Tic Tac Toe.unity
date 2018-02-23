@@ -585,6 +585,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   centerPoint: {x: -12, y: 0, z: 0}
+  rotating: 0
 --- !u!19719996 &104830913
 TilemapCollider2D:
   m_ObjectHideFlags: 0
@@ -1159,6 +1160,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   centerPoint: {x: -12, y: -12, z: 0}
+  rotating: 0
 --- !u!19719996 &172850746
 TilemapCollider2D:
   m_ObjectHideFlags: 0
@@ -1799,6 +1801,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   centerPoint: {x: 0, y: -12, z: 0}
+  rotating: 0
 --- !u!19719996 &290549321
 TilemapCollider2D:
   m_ObjectHideFlags: 0
@@ -1910,7 +1913,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 95da14bbb1cb1fb4e8bcc5e243335336, type: 3}
-  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 0.312, b: 0.232, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -2448,6 +2451,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   centerPoint: {x: 0, y: 0, z: 0}
+  rotating: 0
 --- !u!19719996 &478603563
 TilemapCollider2D:
   m_ObjectHideFlags: 0
@@ -3930,6 +3934,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   centerPoint: {x: 12, y: 0, z: 0}
+  rotating: 0
 --- !u!19719996 &813015699
 TilemapCollider2D:
   m_ObjectHideFlags: 0
@@ -4748,6 +4753,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   centerPoint: {x: -12, y: 12, z: 0}
+  rotating: 0
 --- !u!213 &1061447368
 Sprite:
   m_ObjectHideFlags: 0
@@ -5793,6 +5799,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   centerPoint: {x: 12, y: -12, z: 0}
+  rotating: 0
 --- !u!213 &1585818062
 Sprite:
   m_ObjectHideFlags: 0
@@ -8386,7 +8393,7 @@ Tilemap:
   - m_RefCount: 0
     m_Data: {r: 0, g: 0, b: 21.71306, a: 1e-45}
   m_AnimationFrameRate: 1
-  m_Color: {r: 0, g: 0.7103448, b: 1, a: 1}
+  m_Color: {r: 0.09803922, g: 0.50980395, b: 0.76862746, a: 1}
   m_Origin: {x: -15, y: -15, z: 0}
   m_Size: {x: 34, y: 35, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
@@ -8827,6 +8834,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   centerPoint: {x: 12, y: 12, z: 0}
+  rotating: 0
 --- !u!19719996 &1734540701
 TilemapCollider2D:
   m_ObjectHideFlags: 0
@@ -9275,6 +9283,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   centerPoint: {x: 0, y: 12, z: 0}
+  rotating: 0
 --- !u!19719996 &2048807469
 TilemapCollider2D:
   m_ObjectHideFlags: 0

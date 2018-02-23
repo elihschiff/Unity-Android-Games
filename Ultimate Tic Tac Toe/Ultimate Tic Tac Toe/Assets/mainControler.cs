@@ -29,10 +29,10 @@ public class mainControler : MonoBehaviour {
 
 	public Camera c;
 
-	Color tile1Color = new Color32(242, 27, 63, 255);
-	Color tile2Color = new Color32(238, 232, 44, 255);
+	Color tile1Color = new Color32(255, 80, 59, 255);
+	Color tile2Color = new Color32(255, 202, 58, 255);
 
-	Color activeBoardColor = new Color32(127, 35, 255, 255);
+	Color activeBoardColor = new Color32(138, 201, 38, 255);
 	Color inactiveBoardColor = new Color32(255, 255, 255, 255);
 
 	public GameObject peice;
@@ -114,6 +114,7 @@ public class mainControler : MonoBehaviour {
 						}
 						results = checkForLargeWin(turnColor);
 						if (results[0] > 0) {
+							gameOver = true;
 							Debug.Log("Winner");
 						}
 					}
@@ -349,5 +350,18 @@ public class mainControler : MonoBehaviour {
 
 	private int changeColor(int tc) {
 		return (tc * -1);
+	}
+
+
+	public void resetClicked(bool pl) {
+		if (pl == false) {
+			if (gameOver == true) {
+				//spinning = 1;
+			}
+		}
+		else {
+			gameOver = true;
+			//spinning = 1;
+		}
 	}
 }
