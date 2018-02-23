@@ -45,4 +45,11 @@ public class rotateBoard : MonoBehaviour {
 		}
 		return Vector3.back;
 	}
+
+	public void startRotating() {
+		rotating = 1;
+	}
+	public void stopRotating() {
+		rotating = 2;
+	}
 }

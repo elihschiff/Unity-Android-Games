@@ -361,7 +361,12 @@ public class mainControler : MonoBehaviour {
 		}
 		else {
 			gameOver = true;
-			//spinning = 1;
+			//Tilemap myTM = GameObject.Find("Mini Board (" + (lastActiveBoard + 1) + ")").GetComponent<Tilemap>();
+			rotateBoard mc;
+			for (int i= 0; i < 9; i++) {
+				mc = GameObject.Find("Mini Board (" + (lastActiveBoard + 1) + ")").GetComponent<rotateBoard>();
+				mc.startRotating();
+			}
 		}
 	}
 }

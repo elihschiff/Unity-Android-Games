@@ -9,7 +9,7 @@ public class resetClicked : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		
+		Debug.Log("starting");
 	}
 	
 	// Update is called once per frame
@@ -18,7 +18,7 @@ public class resetClicked : MonoBehaviour {
 	}
 
 	void OnMouseDown() {
-		//Debug.Log("Sprite Clicked");
+		Debug.Log("Reset Clidked");
 		mc.resetClicked(powerLevel);
 	}
 }
