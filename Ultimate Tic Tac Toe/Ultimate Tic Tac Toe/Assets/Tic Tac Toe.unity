@@ -3257,7 +3257,7 @@ Tilemap:
   - m_RefCount: 64
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_AnimationFrameRate: 1
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.5411765, g: 0.7882353, b: 0.14901961, a: 1}
   m_Origin: {x: -14, y: -3, z: 0}
   m_Size: {x: 24, y: 57, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}

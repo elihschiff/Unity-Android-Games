@@ -492,6 +492,12 @@ public class mainControler : MonoBehaviour {
 			//Debug.Log("Mini Board (" + (lastActiveBoard + 1) + ")");
 			mc.stopRotating();
 		}
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				Destroy(placerObjectsBoard[i, j]);
+				placerObjectsBoard[i, j] = null;
+			}
+		}
 
 		for (int i = 0; i < 9; i++) {
 			bigBoard[i] = 0;
@@ -534,7 +540,7 @@ public class mainControler : MonoBehaviour {
 				spotY += 9;
 			}
 		}
-
+		currentActiveBoard = -1;
 		gameOver = false;
 	}
 
