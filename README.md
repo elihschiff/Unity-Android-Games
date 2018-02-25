@@ -13,7 +13,7 @@
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Download Comming Soon and [Video Demo](https://youtu.be/k6bKp34GtCA)
 
-[The rules of the game can be viewed here](https://en.wikipedia.org/wiki/Ultimate_tic-tac-toe)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[The rules of the game can be viewed here](https://en.wikipedia.org/wiki/Ultimate_tic-tac-toe)
 
 
 
