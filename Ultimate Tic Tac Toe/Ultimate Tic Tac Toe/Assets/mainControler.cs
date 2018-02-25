@@ -37,6 +37,8 @@ public class mainControler : MonoBehaviour {
 	Color activeBoardColor = new Color32(138, 201, 38, 255);
 	Color inactiveBoardColor = new Color32(255, 255, 255, 255);
 
+	Color wintileColor = new Color32(50, 205, 50, 255);
+
 	public Sprite resetIconSprite;
 	public Sprite squareSprite;
 
@@ -44,10 +46,11 @@ public class mainControler : MonoBehaviour {
 	public GameObject turnIndicator;
 
 	void Start() {
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 9; i++) {
 			bigBoard[i] = 0;
-			for (int j = 0; j < 3; j++) {
+			for (int j = 0; j < 9; j++) {
 				smallBoards[i, j] = 0;
+				smallBoardsObjects[i, j] = null;
 			}
 		}
 
@@ -89,21 +92,29 @@ public class mainControler : MonoBehaviour {
 			X = 1.5f;
 			Y -= 6f;
 		}
+
+		//easy debug
+		//results[0] = 4;
+		//results[1] = 2;
+		//gameOver = true;
 	}
 
 	// Update is called once per frame
 	void Update() {
 		//Debug.Log("update");
 		mouseSpot = c.ScreenToWorldPoint(Input.mousePosition);
+		if (Input.GetMouseButtonUp(0)) {
+			if (mouseSpot.x >= -12 - 2 && mouseSpot.x <= -12 + 2) {
+				if (mouseSpot.y >= -35 - 2 && mouseSpot.y <= -35 + 2) {
+					resetClicked(true);
+				}
+			}
+		}
+
 
 		if (gameOver == false) {
 			if (Input.GetMouseButtonUp(0)) {
-				if (mouseSpot.x >= -12 - 2 && mouseSpot.x <= -12 + 2) {
-					if (mouseSpot.y >= -35 - 2 && mouseSpot.y <= -35 + 2) {
-						resetClicked(true);
-					}
-				}
-
+				
 
 
 
@@ -116,7 +127,7 @@ public class mainControler : MonoBehaviour {
 				getPlaceSpot(mouseSpot);
 				if (attemptToPlace(mouseSpot, currentActiveBoard, turnColor) == true) {
 					results = checkForMiniWin(lastActiveBoard, turnColor);
-					if (results[0] > 0) {
+					if (results[0] > 0 && results[0] != 5) {
 						//Debug.Log("Mini Win " + results[0]+ " " + results[1]);
 						//Debug.Log("Mini Board (" + (lastActiveBoard + 1) + ")");
 						bigBoard[lastActiveBoard] = turnColor;
@@ -130,12 +141,74 @@ public class mainControler : MonoBehaviour {
 						results = checkForLargeWin(turnColor);
 						if (results[0] > 0) {
 							gameOver = true;
+							Tilemap mySpriteRenderer = GameObject.Find("Mini Board (" + (lastActiveBoard + 1) + ")").GetComponent<Tilemap>();
+							mySpriteRenderer.color = inactiveBoardColor;
+							Debug.Log("Winner");
+						}
+					}else if(results[0] == 5) {
+						bigBoard[lastActiveBoard] = 3;
+						results = checkForLargeWin(turnColor);
+						if (results[0] > 0) {
+							gameOver = true;
+							Tilemap mySpriteRenderer = GameObject.Find("Mini Board (" + (lastActiveBoard+ 1) + ")").GetComponent<Tilemap>();
+							mySpriteRenderer.color = inactiveBoardColor;
 							Debug.Log("Winner");
 						}
 					}
 					turnColor = changeColor(turnColor);
 				}
 			}
+		}
+		else {
+			changeWinningTileColors(results, (Mathf.PingPong(Time.time, 2) <= 1));
+		}
+	}
+
+	public void changeWinningTileColors(int[] results, bool colorBool) {
+
+		Color newColor = wintileColor;
+		if (colorBool == true) {
+			if (turnColor * -1 == 1) {
+				newColor = tile1Color;
+			}
+			else {
+				newColor = tile2Color;
+			}
+		}
+
+		//Debug.Log("color change");
+		if (results[0] == 1) {
+			for (int i = 0; i < 3; i++) {
+				Tilemap mySpriteRenderer = GameObject.Find("Mini Board (" + (results[1] + i + 1) + ")").GetComponent<Tilemap>();
+				mySpriteRenderer.color = newColor;
+				//homerun
+			}
+		}
+		else if (results[0] == 2) {
+			for (int i = 0; i < 3; i++) {
+				//Debug.Log((results[1] + (i * 3)));
+				Tilemap mySpriteRenderer = GameObject.Find("Mini Board (" + (results[1] + 1 + (i * 3)) + ")").GetComponent<Tilemap>();
+				mySpriteRenderer.color = newColor;
+
+			}
+		}
+		else if (results[0] == 3) {
+			for (int i = 0; i < 3; i++) {
+				//Debug.Log(results[1] + i + " " + results[2]);
+				Tilemap mySpriteRenderer = GameObject.Find("Mini Board (" + ((i * 4) + 1 )+ ")").GetComponent<Tilemap>();
+				mySpriteRenderer.color = newColor;
+			}
+		}
+		else if (results[0] == 4) {
+			for (int i = 0; i < 3; i++) {
+				//Debug.Log(results[1] + i + " " + results[2]);
+				Tilemap mySpriteRenderer = GameObject.Find("Mini Board (" + (3 + (i * 2)) + ")").GetComponent<Tilemap>();
+				mySpriteRenderer.color = newColor;
+
+			}
+		}
+		else if (results[0] == 5) {
+			//draw
 		}
 	}
 
@@ -168,6 +241,7 @@ public class mainControler : MonoBehaviour {
 				mySpriteRendererTC.color = tile1Color;
 			}
 			smallBoards[cab, spot] = tc;
+
 
 			displayActiveBoard(spot);
 
@@ -221,6 +295,8 @@ public class mainControler : MonoBehaviour {
 				}
 			}
 		}
+
+
 
 
 	}
@@ -314,7 +390,7 @@ public class mainControler : MonoBehaviour {
 					countDraw++;
 				}
 		}
-		if (countDraw >= 7 * 6) {
+		if (countDraw >= 9) {
 			int[] winningLocation = { 5, 0};
 			if (currentActiveBoard == lab) {
 				inactivateBoard();
@@ -358,7 +434,7 @@ public class mainControler : MonoBehaviour {
 				countDraw++;
 			}
 		}
-		if (countDraw >= 7 * 6) {
+		if (countDraw >= 9) {
 			int[] winningLocation = { 5, 0 };
 			return winningLocation;
 		}
@@ -384,8 +460,22 @@ public class mainControler : MonoBehaviour {
 			rotateBoard mc;
 			for (int i= 0; i < 9; i++) {
 				mc = GameObject.Find("Mini Board (" + (i + 1) + ")").GetComponent<rotateBoard>();
-				Debug.Log("Mini Board (" + (lastActiveBoard + 1) + ")");
+				//Debug.Log("Mini Board (" + (lastActiveBoard + 1) + ")");
+
+				for (int j = 0; j < 9; j++) {
+					Tilemap myTM = GameObject.Find("Mini Board (" + (j + 1) + ")").GetComponent<Tilemap>();
+					myTM.color = inactiveBoardColor;
+				}
+
 				mc.startRotating();
+				for (int j = 0; j < 9; j++) {
+					if (smallBoardsObjects[i, j] != null) {
+						smallBoardsObjects[i, j].GetComponent<Rigidbody2D>().simulated = true;
+						if (j == 4) {
+							smallBoardsObjects[i, j].GetComponent<BoxCollider2D>().enabled = false;
+						}
+					}
+				}
 			}
 
 			StartCoroutine(startGame());
@@ -393,21 +483,28 @@ public class mainControler : MonoBehaviour {
 	}
 
 	private IEnumerator startGame() {
-			yield return new WaitForSeconds(2);
+			yield return new WaitForSeconds(5);
 		//print("WaitAndPrint " + Time.time);
 
 		rotateBoard mc;
 		for (int i = 0; i < 9; i++) {
 			mc = GameObject.Find("Mini Board (" + (i + 1) + ")").GetComponent<rotateBoard>();
-			Debug.Log("Mini Board (" + (lastActiveBoard + 1) + ")");
+			//Debug.Log("Mini Board (" + (lastActiveBoard + 1) + ")");
 			mc.stopRotating();
 		}
 
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 9; i++) {
 			bigBoard[i] = 0;
-			for (int j = 0; j < 3; j++) {
+			Destroy(bigBoardsObjects[i]);
+			bigBoardsObjects[i] = null;
+			for (int j = 0; j < 9; j++) {
 				smallBoards[i, j] = 0;
+				Destroy(smallBoardsObjects[i, j]);
+				smallBoardsObjects[i, j] = null;
 			}
+
+			Tilemap myTM = GameObject.Find("Mini Board (" + (i + 1) + ")").GetComponent<Tilemap>();
+			myTM.color = inactiveBoardColor;
 		}
 
 		int spotX = -15;

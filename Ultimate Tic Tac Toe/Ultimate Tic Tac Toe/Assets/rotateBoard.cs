@@ -34,8 +34,12 @@ public class rotateBoard : MonoBehaviour {
 			transform.RotateAround(centerPoint, direction, transform.rotation.eulerAngles.z);
 			Debug.Log("transform.rotation.eulerAngles.z");
 			rotating = 0;
+			//transform.rotation.eulerAngles = new Vector3(Mathf.Round(this.transform.position.x), Mathf.Round(this.transform.position.y), this.transform.position.z);
+			transform.rotation = Quaternion.identity;
+			this.transform.position = new Vector3(Mathf.Round(this.transform.position.x), Mathf.Round(this.transform.position.y), this.transform.position.z);
+			
 		}
-		else{
+		else {
 			transform.RotateAround(centerPoint, direction, speed * Time.deltaTime);
 		}
 	}
