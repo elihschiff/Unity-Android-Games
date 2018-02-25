@@ -173,6 +173,10 @@ public class mainControler : MonoBehaviour {
 	private void displayActiveBoard(int newBoard) {
 		lastActiveBoard = currentActiveBoard;
 
+		if(newBoard == -1) {
+			return;
+		}
+
 		if (bigBoard[newBoard] != 0) {
 			inactivateBoard();
 			return;
