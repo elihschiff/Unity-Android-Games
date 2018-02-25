@@ -17,6 +17,8 @@ public class mainControler : MonoBehaviour {
 	private int[,] pieceLocationsX = new int[9, 9];//first number is the board second is spot in board
 	private int[,] pieceLocationsY = new int[9, 9];//first number is the board second is spot in board
 
+	private IEnumerator coroutine;
+
 	bool gameOver = false;
 	private Vector3 mouseSpot;
 
@@ -34,6 +36,9 @@ public class mainControler : MonoBehaviour {
 
 	Color activeBoardColor = new Color32(138, 201, 38, 255);
 	Color inactiveBoardColor = new Color32(255, 255, 255, 255);
+
+	public Sprite resetIconSprite;
+	public Sprite squareSprite;
 
 	public GameObject peice;
 	public GameObject turnIndicator;
@@ -93,6 +98,15 @@ public class mainControler : MonoBehaviour {
 
 		if (gameOver == false) {
 			if (Input.GetMouseButtonUp(0)) {
+				if (mouseSpot.x >= -12 - 2 && mouseSpot.x <= -12 + 2) {
+					if (mouseSpot.y >= -35 - 2 && mouseSpot.y <= -35 + 2) {
+						resetClicked(true);
+					}
+				}
+
+
+
+
 				currentActiveBoard = changeActiveBoard(mouseSpot, currentActiveBoard);
 				displayActiveBoard(currentActiveBoard);
 				if (currentActiveBoard >= 0) {
@@ -369,9 +383,63 @@ public class mainControler : MonoBehaviour {
 			//Tilemap myTM = GameObject.Find("Mini Board (" + (lastActiveBoard + 1) + ")").GetComponent<Tilemap>();
 			rotateBoard mc;
 			for (int i= 0; i < 9; i++) {
-				mc = GameObject.Find("Mini Board (" + (lastActiveBoard + 1) + ")").GetComponent<rotateBoard>();
+				mc = GameObject.Find("Mini Board (" + (i + 1) + ")").GetComponent<rotateBoard>();
+				Debug.Log("Mini Board (" + (lastActiveBoard + 1) + ")");
 				mc.startRotating();
 			}
+
+			StartCoroutine(startGame());
 		}
 	}
+
+	private IEnumerator startGame() {
+			yield return new WaitForSeconds(2);
+		//print("WaitAndPrint " + Time.time);
+
+		rotateBoard mc;
+		for (int i = 0; i < 9; i++) {
+			mc = GameObject.Find("Mini Board (" + (i + 1) + ")").GetComponent<rotateBoard>();
+			Debug.Log("Mini Board (" + (lastActiveBoard + 1) + ")");
+			mc.stopRotating();
+		}
+
+		for (int i = 0; i < 3; i++) {
+			bigBoard[i] = 0;
+			for (int j = 0; j < 3; j++) {
+				smallBoards[i, j] = 0;
+			}
+		}
+
+		int spotX = -15;
+		int spotY = 15;
+		for (int i = 0; i < 9; i++) {//all boards
+			for (int j = 0; j < 9; j++) {//all spots on a board
+
+				//Debug.Log(spotX + " " + spotY);
+				pieceLocationsX[i, j] = spotX;
+				pieceLocationsY[i, j] = spotY;
+
+				if ((j + 1) % 3 == 0) {
+					spotX -= 2 * 3;
+					spotY -= 3;
+				}
+				else {
+					spotX += 3;
+				}
+			}
+
+			if ((i + 1) % 3 == 0) {
+				spotX = -15;
+				spotY -= 3;
+			}
+			else {
+				spotX += 12;
+				spotY += 9;
+			}
+		}
+
+		gameOver = false;
+	}
+
+
 }

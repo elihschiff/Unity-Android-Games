@@ -29,9 +29,10 @@ public class rotateBoard : MonoBehaviour {
 	}
 
 	public void rotateOnCenter(bool reset) {
-		Debug.Log(transform.rotation.eulerAngles.z + " " + speed * Time.deltaTime);
+		//Debug.Log(transform.rotation.eulerAngles.z + " " + speed * Time.deltaTime);
 		if(rotating == 2 && transform.rotation.eulerAngles.z <= speed * Time.deltaTime){
-			transform.RotateAround(centerPoint, direction, -transform.rotation.eulerAngles.x);
+			transform.RotateAround(centerPoint, direction, transform.rotation.eulerAngles.z);
+			Debug.Log("transform.rotation.eulerAngles.z");
 			rotating = 0;
 		}
 		else{
