@@ -172,6 +172,7 @@ GameObject:
   - component: {fileID: 262403902}
   - component: {fileID: 262403904}
   - component: {fileID: 262403905}
+  - component: {fileID: 262403906}
   m_Layer: 0
   m_Name: Tilemap baseboard
   m_TagString: Untagged
@@ -521,6 +522,19 @@ MonoBehaviour:
   resetIconSprite: {fileID: 21300000, guid: 4da771df640366640b46e84391cee884, type: 3}
   squareSprite: {fileID: 21300000, guid: 12e0c5527ef3d1e42859a8e59beb9c0a, type: 3}
   turnIndicator: {fileID: 1827708850}
+  aiActive: 1
+  aiScript: {fileID: 262403906}
+--- !u!114 &262403906
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 262403900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5a7710e1ff86de46a002631122741d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &540340973
 GameObject:
   m_ObjectHideFlags: 0
@@ -8755,6 +8769,8 @@ MonoBehaviour:
   resetIconSprite: {fileID: 0}
   squareSprite: {fileID: 0}
   turnIndicator: {fileID: 0}
+  aiActive: 1
+  aiScript: {fileID: 0}
 --- !u!1 &2072937647
 GameObject:
   m_ObjectHideFlags: 0

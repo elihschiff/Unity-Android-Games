@@ -39,6 +39,8 @@ public class connect4Controle : MonoBehaviour {
 
 	public GameObject turnIndicator;
 
+	public bool aiActive;
+
 
 	float currentTime = 0f;
 	float timeToMove = 3f;
@@ -46,6 +48,10 @@ public class connect4Controle : MonoBehaviour {
 	private bool gameOver = false;
 
 	private int[] results = {0,0,0};
+
+
+
+	public AI aiScript;
 
 	// Use this for initialization
 	void Start() {
@@ -67,10 +73,35 @@ public class connect4Controle : MonoBehaviour {
 		mouseSpot = c.ScreenToWorldPoint(Input.mousePosition);
 
 		if (gameOver == false) {
-			if (Input.GetMouseButtonUp(0)) {
+			if (aiActive == true && turnColor == -1) {
+				if (canMakeTurn == true) {
+					int aiSpotPick = aiScript.makeMove(gameBoard);
+					Vector3 aiPlaceSpot = new Vector3(aiSpotPick, 0, 0);
+
+					if (attemptToPlace(aiPlaceSpot, rowCount, rowStartSpot, colCount, colStartSpot, turnColor, true) == true) {
+						canMakeTurn = false;
+						results = checkForWin(rowCount, colCount, turnColor);
+						if (results[0] > 0) {
+							changeWinningTileColors(results, true);
+							gameOver = true;
+
+							SpriteRenderer mySpriteRendererTC = turnIndicator.GetComponent<SpriteRenderer>();
+							mySpriteRendererTC.sprite = resetIconSprite;
+
+
+							//Debug.Break();
+						}
+
+						turnColor = changeColor(turnColor);
+
+
+
+					}
+				}
+			}else if (Input.GetMouseButtonUp(0)) {
 				//Debug.Log("Pressed left click.");
 				if (canMakeTurn == true) {
-					if (attemptToPlace(mouseSpot, rowCount, rowStartSpot, colCount, colStartSpot, turnColor) == true) {
+					if (attemptToPlace(mouseSpot, rowCount, rowStartSpot, colCount, colStartSpot, turnColor, false) == true) {
 						canMakeTurn = false;
 						results = checkForWin(rowCount, colCount, turnColor);
 						if (results[0] > 0) {
@@ -207,10 +238,16 @@ public class connect4Controle : MonoBehaviour {
 	}
 
 
-	public bool attemptToPlace(Vector3 mcl, int rc, int rss, int cc, int css, int tc) {
-		int spotx = getPlaceSpot(mouseSpot, rowCount, rowStartSpot);
-		if (spotx == -999) {
-			return false;
+	public bool attemptToPlace(Vector3 mcl, int rc, int rss, int cc, int css, int tc, bool isAIPlacing) {//mcl x location is the x location for an ai player
+		int spotx;
+		if (isAIPlacing == false) {
+			spotx = getPlaceSpot(mouseSpot, rowCount, rowStartSpot);
+			if (spotx == -999) {
+				return false;
+			}
+		}
+		else {
+			spotx = (int) mcl.x;
 		}
 		for (int i = 0; i < cc; i++) {
 			if (gameBoard[spotx, i] == 0) {
