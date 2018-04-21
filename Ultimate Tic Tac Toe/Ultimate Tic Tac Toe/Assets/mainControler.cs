@@ -22,7 +22,7 @@ public class mainControler : MonoBehaviour {
 	bool gameOver = false;
 	private Vector3 mouseSpot;
 
-	private int[] results = { 0, 0};
+	private int[] results = { 0, 0 };
 
 	private int turnColor = 1;
 
@@ -44,6 +44,8 @@ public class mainControler : MonoBehaviour {
 
 	public GameObject peice;
 	public GameObject turnIndicator;
+
+	int aiTimer = 0;
 
 	void Start() {
 		for (int i = 0; i < 9; i++) {
@@ -112,12 +114,8 @@ public class mainControler : MonoBehaviour {
 		}
 
 
-		if (gameOver == false) {
+		if (gameOver == false && turnColor == -1) {
 			if (Input.GetMouseButtonUp(0)) {
-				
-
-
-
 				currentActiveBoard = changeActiveBoard(mouseSpot, currentActiveBoard);
 				displayActiveBoard(currentActiveBoard);
 				if (currentActiveBoard >= 0) {
@@ -131,7 +129,7 @@ public class mainControler : MonoBehaviour {
 						//Debug.Log("Mini Win " + results[0]+ " " + results[1]);
 						//Debug.Log("Mini Board (" + (lastActiveBoard + 1) + ")");
 						bigBoard[lastActiveBoard] = turnColor;
-						Tilemap myTM = GameObject.Find("Mini Board (" + (lastActiveBoard+1) + ")").GetComponent<Tilemap>();
+						Tilemap myTM = GameObject.Find("Mini Board (" + (lastActiveBoard + 1) + ")").GetComponent<Tilemap>();
 						if (turnColor == 1) {
 							myTM.color = tile1Color;
 						}
@@ -145,24 +143,160 @@ public class mainControler : MonoBehaviour {
 							mySpriteRenderer.color = inactiveBoardColor;
 							Debug.Log("Winner");
 						}
-					}else if(results[0] == 5) {
+					}
+					else if (results[0] == 5) {
 						bigBoard[lastActiveBoard] = 3;
 						results = checkForLargeWin(turnColor);
 						if (results[0] > 0) {
 							gameOver = true;
-							Tilemap mySpriteRenderer = GameObject.Find("Mini Board (" + (lastActiveBoard+ 1) + ")").GetComponent<Tilemap>();
+							Tilemap mySpriteRenderer = GameObject.Find("Mini Board (" + (lastActiveBoard + 1) + ")").GetComponent<Tilemap>();
 							mySpriteRenderer.color = inactiveBoardColor;
 							Debug.Log("Winner");
 						}
 					}
 					turnColor = changeColor(turnColor);
+					aiTimer = 90;
 				}
+			}
+		}
+		else if (gameOver == false && turnColor == 1 && aiTimer == 0) {
+
+			mouseSpot = new Vector3(Random.Range(-15.0f, 15.0f), Random.Range(-15.0f, 15.0f), 0);//ai pick board to play on
+
+			if (currentActiveBoard < 0) {
+				currentActiveBoard = changeActiveBoard(mouseSpot, currentActiveBoard);
+				aiTimer = 90;
+			}
+
+			displayActiveBoard(currentActiveBoard);
+			if (currentActiveBoard >= 0) {
+				Tilemap myTMcab = GameObject.Find("Mini Board (" + (currentActiveBoard + 1) + ")").GetComponent<Tilemap>();
+				myTMcab.color = activeBoardColor;
+			}
+			if (aiTimer == 0) {
+				//mouseSpot = new Vector3(Random.Range(0.0f, 15.0f), Random.Range(-22.5f, -37.5f), 0);//ai pick spot to play on
+				int highestValue = -999999;
+				int spot = 0;
+				for (int i = 0; i < 9; i++) {
+					if (smallBoards[currentActiveBoard, i] == 0) {
+
+						int[] tempBoard = new int[9];
+						for (int j = 0; j < 9; j++) {
+							tempBoard[j] = smallBoards[currentActiveBoard, j];
+						}
+
+						if (tempBoard[i] == 0) {
+							tempBoard[i] = turnColor;
+							int spotValue = checkAIMove(tempBoard, turnColor, i);
+							print(i + " " + spotValue);
+							if (spotValue >= highestValue) {
+								highestValue = spotValue;
+								spot = i;
+								//print("change to " + spot);
+							}
+						}
+					}
+				}
+				//print(spot);
+				mouseSpot = new Vector3(6*(spot%3)+1.5f, -24f-(6*Mathf.Floor(spot/3)), 0);//ai pick spot to play on
+				print("mouseSpot "+mouseSpot);
+			}
+			getPlaceSpot(mouseSpot);
+			if (attemptToPlace(mouseSpot, currentActiveBoard, turnColor) == true) {
+				results = checkForMiniWin(lastActiveBoard, turnColor);
+				if (results[0] > 0 && results[0] != 5) {
+					//Debug.Log("Mini Win " + results[0]+ " " + results[1]);
+					//Debug.Log("Mini Board (" + (lastActiveBoard + 1) + ")");
+					bigBoard[lastActiveBoard] = turnColor;
+					Tilemap myTM = GameObject.Find("Mini Board (" + (lastActiveBoard + 1) + ")").GetComponent<Tilemap>();
+					if (turnColor == 1) {
+						myTM.color = tile1Color;
+					}
+					else {
+						myTM.color = tile2Color;
+					}
+					results = checkForLargeWin(turnColor);
+					if (results[0] > 0) {
+						gameOver = true;
+						Tilemap mySpriteRenderer = GameObject.Find("Mini Board (" + (lastActiveBoard + 1) + ")").GetComponent<Tilemap>();
+						mySpriteRenderer.color = inactiveBoardColor;
+						Debug.Log("Winner");
+					}
+				}
+				else if (results[0] == 5) {
+					bigBoard[lastActiveBoard] = 3;
+					results = checkForLargeWin(turnColor);
+					if (results[0] > 0) {
+						gameOver = true;
+						Tilemap mySpriteRenderer = GameObject.Find("Mini Board (" + (lastActiveBoard + 1) + ")").GetComponent<Tilemap>();
+						mySpriteRenderer.color = inactiveBoardColor;
+						Debug.Log("Winner");
+					}
+				}
+				turnColor = changeColor(turnColor);
 			}
 		}
 		else {
 			changeWinningTileColors(results, (Mathf.PingPong(Time.time, 2) <= 1));
 		}
+		if (aiTimer > 0) {
+			aiTimer--;
+		}
 	}
+
+	public int checkAIMove(int[] board, int turn, int spot) {
+		int moveValue = 1*checkAIWin(board, turn, spot);
+		moveValue += -1*checkAIWin(board, turn*-1, spot);
+		if (moveValue == 0) {
+			int[] newBoard = new int[9];
+			System.Array.Copy(board, newBoard, board.Length);
+			newBoard[spot] = turn;
+			for (int i = 0; i < 9; i++) {
+				if (newBoard[i] == 0) {
+					moveValue -= checkAIMove(newBoard, turn * -1, i);
+				}
+			}
+		}
+		return moveValue;
+	}
+
+	public int checkAIWin(int[] board, int turn, int spot) {
+		int tc = turn;
+		for (int i = 0; i < 3; i++) {
+			if (board[i * 3] == tc && board[i * 3 + 1] == tc && board[i * 3 + 2] == tc) {
+				return 1;
+			}
+
+			if (board[i] == tc && board[i + 3] == tc && board[i + 6] == tc) {
+				return 1;
+			}
+
+		}
+
+		if (board[0] == tc && board[4] == tc && board[8] == tc) {
+			return 1;
+		}
+
+		if (board[6] == tc && board[4] == tc && board[2] == tc) {
+			return 1;
+		}
+
+
+		//draw
+		int countDraw = 0;
+		for (int i = 0; i < 9; i++) {
+			if (board[i] != 0) {
+				countDraw++;
+			}
+		}
+		if (countDraw >= 9) {
+			return 0;
+		}
+
+		return 0;
+	}
+
+
 
 	public void changeWinningTileColors(int[] results, bool colorBool) {
 
@@ -324,7 +458,7 @@ public class mainControler : MonoBehaviour {
 					if (mcl.x >= pieceLocationsX[i*3+j,4] - 4 && mcl.x <= pieceLocationsX[i * 3 + j, 4] + 4) {
 						if (mcl.y >= pieceLocationsY[i * 3 + j, 4] - 4 && mcl.y <= pieceLocationsY[i * 3 + j, 4] + 4) {
 							if (bigBoard[i * 3 + j] == 0) {
-								Debug.Log(i * 3 + j);
+								//Debug.Log(i * 3 + j);
 								return (i * 3 + j);
 							}
 						}
