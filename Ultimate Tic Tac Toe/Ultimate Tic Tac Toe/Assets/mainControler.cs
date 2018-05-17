@@ -103,6 +103,7 @@ public class mainControler : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update() {
+		//aiTimer = 0;
 		//Debug.Log("update");
 		mouseSpot = c.ScreenToWorldPoint(Input.mousePosition);
 		if (Input.GetMouseButtonUp(0)) {
@@ -187,19 +188,26 @@ public class mainControler : MonoBehaviour {
 
 						if (tempBoard[i] == 0) {
 							tempBoard[i] = turnColor;
-							int spotValue = checkAIMove(tempBoard, turnColor, i);
+							int spotValue = checkAIMove(tempBoard, turnColor, i, 99999);
 							print(i + " " + spotValue);
-							if (spotValue >= highestValue) {
+							//Random rnd = new Random();
+							if (spotValue > highestValue) {
 								highestValue = spotValue;
 								spot = i;
 								//print("change to " + spot);
+							}
+							else if (spotValue == highestValue) {
+								Random random = new Random();
+								if (Random.value < .2) {
+									spot = i;
+								}
 							}
 						}
 					}
 				}
 				//print(spot);
-				mouseSpot = new Vector3(6*(spot%3)+1.5f, -24f-(6*Mathf.Floor(spot/3)), 0);//ai pick spot to play on
-				print("mouseSpot "+mouseSpot);
+				mouseSpot = new Vector3(6 * (spot % 3) + 1.5f, -24f - (6 * Mathf.Floor(spot / 3)), 0);//ai pick spot to play on
+				print("mouseSpot " + mouseSpot);
 			}
 			getPlaceSpot(mouseSpot);
 			if (attemptToPlace(mouseSpot, currentActiveBoard, turnColor) == true) {
@@ -244,16 +252,16 @@ public class mainControler : MonoBehaviour {
 		}
 	}
 
-	public int checkAIMove(int[] board, int turn, int spot) {
-		int moveValue = 1*checkAIWin(board, turn, spot);
-		moveValue += -1*checkAIWin(board, turn*-1, spot);
+	public int checkAIMove(int[] board, int turn, int spot, int level) {
+		int moveValue = 1 * checkAIWin(board, turn, spot) * level;
+		moveValue += -2 * checkAIWin(board, turn * -1, spot) * level;
 		if (moveValue == 0) {
 			int[] newBoard = new int[9];
 			System.Array.Copy(board, newBoard, board.Length);
 			newBoard[spot] = turn;
 			for (int i = 0; i < 9; i++) {
 				if (newBoard[i] == 0) {
-					moveValue -= checkAIMove(newBoard, turn * -1, i);
+					moveValue -= checkAIMove(newBoard, turn * -1, i, (int)(level * .05f));
 				}
 			}
 		}
@@ -329,7 +337,7 @@ public class mainControler : MonoBehaviour {
 		else if (results[0] == 3) {
 			for (int i = 0; i < 3; i++) {
 				//Debug.Log(results[1] + i + " " + results[2]);
-				Tilemap mySpriteRenderer = GameObject.Find("Mini Board (" + ((i * 4) + 1 )+ ")").GetComponent<Tilemap>();
+				Tilemap mySpriteRenderer = GameObject.Find("Mini Board (" + ((i * 4) + 1) + ")").GetComponent<Tilemap>();
 				mySpriteRenderer.color = newColor;
 			}
 		}
@@ -395,7 +403,7 @@ public class mainControler : MonoBehaviour {
 	private void displayActiveBoard(int newBoard) {
 		lastActiveBoard = currentActiveBoard;
 
-		if(newBoard == -1) {
+		if (newBoard == -1) {
 			return;
 		}
 
@@ -408,9 +416,9 @@ public class mainControler : MonoBehaviour {
 		}
 
 		GameObject clone;
-		for(int i = 0; i < 3; i++) {
+		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-				Destroy(placerObjectsBoard[j,i]);
+				Destroy(placerObjectsBoard[j, i]);
 
 				if (smallBoards[currentActiveBoard, i * 3 + j] == 1) {
 					clone = Instantiate(turnIndicator, placerBoardLocation[j, i], Quaternion.identity);
@@ -418,7 +426,7 @@ public class mainControler : MonoBehaviour {
 					placerObjectsBoard[j, i] = clone;
 					mySpriteRenderer.color = tile1Color;
 				}
-				else if(smallBoards[currentActiveBoard, i * 3 + j] == -1) {
+				else if (smallBoards[currentActiveBoard, i * 3 + j] == -1) {
 					clone = Instantiate(turnIndicator, placerBoardLocation[j, i], Quaternion.identity);
 					SpriteRenderer mySpriteRenderer = clone.GetComponent<SpriteRenderer>();
 					placerObjectsBoard[j, i] = clone;
@@ -441,7 +449,7 @@ public class mainControler : MonoBehaviour {
 				if (mcl.x >= 6 * j + 1.5 - 2.5 && mcl.x <= 6 * j + 1.5 + 2.5) {
 					if (mcl.y >= -6 * i + (-24) - 2.5 && mcl.y <= -6 * i + (-24) + 2.5) {
 						//Debug.Log(i * 3 + j);
-						return (i*3 + j);
+						return (i * 3 + j);
 					}
 				}
 				//Debug.Log(i + " " + j);
@@ -452,10 +460,10 @@ public class mainControler : MonoBehaviour {
 	}
 
 	int changeActiveBoard(Vector3 mcl, int cab) {
-		if(currentActiveBoard == -1) {
+		if (currentActiveBoard == -1) {
 			for (int i = 0; i < 3; i++) {
 				for (int j = 0; j < 3; j++) {
-					if (mcl.x >= pieceLocationsX[i*3+j,4] - 4 && mcl.x <= pieceLocationsX[i * 3 + j, 4] + 4) {
+					if (mcl.x >= pieceLocationsX[i * 3 + j, 4] - 4 && mcl.x <= pieceLocationsX[i * 3 + j, 4] + 4) {
 						if (mcl.y >= pieceLocationsY[i * 3 + j, 4] - 4 && mcl.y <= pieceLocationsY[i * 3 + j, 4] + 4) {
 							if (bigBoard[i * 3 + j] == 0) {
 								//Debug.Log(i * 3 + j);
@@ -484,13 +492,13 @@ public class mainControler : MonoBehaviour {
 		for (int i = 0; i < 3; i++) {
 			if (smallBoards[lab, i * 3] == tc && smallBoards[lab, i * 3 + 1] == tc && smallBoards[lab, i * 3 + 2] == tc) {
 				int[] winningLocation = { 1, i * 3 };
-				if(currentActiveBoard == lab) {
+				if (currentActiveBoard == lab) {
 					inactivateBoard();
 				}
 				return winningLocation;
 			}
 
-			if (smallBoards[lab, i] == tc && smallBoards[lab, i+3] == tc && smallBoards[lab, i+6] == tc) {
+			if (smallBoards[lab, i] == tc && smallBoards[lab, i + 3] == tc && smallBoards[lab, i + 6] == tc) {
 				int[] winningLocation = { 2, i };
 				if (currentActiveBoard == lab) {
 					inactivateBoard();
@@ -501,7 +509,7 @@ public class mainControler : MonoBehaviour {
 		}
 
 		if (smallBoards[lab, 0] == tc && smallBoards[lab, 4] == tc && smallBoards[lab, 8] == tc) {
-			int[] winningLocation = { 3, 0};
+			int[] winningLocation = { 3, 0 };
 			if (currentActiveBoard == lab) {
 				inactivateBoard();
 			}
@@ -509,7 +517,7 @@ public class mainControler : MonoBehaviour {
 		}
 
 		if (smallBoards[lab, 6] == tc && smallBoards[lab, 4] == tc && smallBoards[lab, 2] == tc) {
-			int[] winningLocation = { 4, 6};
+			int[] winningLocation = { 4, 6 };
 			if (currentActiveBoard == lab) {
 				inactivateBoard();
 			}
@@ -520,19 +528,19 @@ public class mainControler : MonoBehaviour {
 		//draw
 		int countDraw = 0;
 		for (int i = 0; i < 9; i++) {
-				if (smallBoards[lab, i] != 0) {
-					countDraw++;
-				}
+			if (smallBoards[lab, i] != 0) {
+				countDraw++;
+			}
 		}
 		if (countDraw >= 9) {
-			int[] winningLocation = { 5, 0};
+			int[] winningLocation = { 5, 0 };
 			if (currentActiveBoard == lab) {
 				inactivateBoard();
 			}
 			return winningLocation;
 		}
 
-		int[] wl = { 0, 0};
+		int[] wl = { 0, 0 };
 		return wl;
 	}
 
@@ -572,7 +580,7 @@ public class mainControler : MonoBehaviour {
 			int[] winningLocation = { 5, 0 };
 			return winningLocation;
 		}
-		
+
 		int[] wl = { 0, 0 };
 		return wl;
 	}
@@ -592,7 +600,7 @@ public class mainControler : MonoBehaviour {
 			gameOver = true;
 			//Tilemap myTM = GameObject.Find("Mini Board (" + (lastActiveBoard + 1) + ")").GetComponent<Tilemap>();
 			rotateBoard mc;
-			for (int i= 0; i < 9; i++) {
+			for (int i = 0; i < 9; i++) {
 				mc = GameObject.Find("Mini Board (" + (i + 1) + ")").GetComponent<rotateBoard>();
 				//Debug.Log("Mini Board (" + (lastActiveBoard + 1) + ")");
 
@@ -617,7 +625,7 @@ public class mainControler : MonoBehaviour {
 	}
 
 	private IEnumerator startGame() {
-			yield return new WaitForSeconds(5);
+		yield return new WaitForSeconds(5);
 		//print("WaitAndPrint " + Time.time);
 
 		rotateBoard mc;
